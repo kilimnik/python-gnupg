@@ -1342,6 +1342,7 @@ class GPG(object):
     def export_keys(self,
                     keyids,
                     secret=False,
+                    subkey=False,
                     armor=True,
                     minimal=False,
                     passphrase=None,
@@ -1358,10 +1359,14 @@ class GPG(object):
             raise ValueError('Invalid passphrase')
         which = ''
         if secret:
-            which = '-secret-key'
             if self.version >= (2, 1) and passphrase is None and expect_passphrase:
                 raise ValueError('For GnuPG >= 2.1, exporting secret keys '
                                  'needs a passphrase to be provided')
+            if subkey:
+                which = '-secret-subkey'
+            else:
+                which = '-secret-key'
+
         if _is_sequence(keyids):
             keyids = [no_quote(k) for k in keyids]
         else:
